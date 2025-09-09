@@ -261,9 +261,29 @@
                                                 <div class="font-semibold">Cart</div>
                                                 <div class="text-xs text-gray-400 mt-1">My Cart</div>
                                             </div>
-                                        </div>
+                                    </div>
                                 </a>
                             </div>
+
+                            <form method="POST" action="{{ route('logout') }}" class="user-dropdown-item">
+                                    @csrf
+                                    <button type="submit" class="w-full text-left block px-4 py-3 text-sm hover:text-red-400 transition-all duration-200">
+                                        <div class="flex items-center">
+                                            <span class="text-lg mr-3">🚪</span>
+                                            <div>
+                                                <div class="font-semibold">Logout</div>
+                                                <div class="text-xs text-gray-400 mt-1">Sign out of beast mode</div>
+                                            </div>
+                                        </div>
+                                    </button>
+                            </form>
+
+
+
+
+
+
+
                         </div>
                     </div>
                     <!-- CTA Button -->
@@ -860,6 +880,22 @@ document.getElementById('newsletter-form').addEventListener('submit', function(e
                 }
             });
         });
+
+
+        function handleLogout() {
+            // This would typically submit a logout form in Laravel
+            // For demonstration, we'll just show an alert
+            if (confirm('Are you sure you want to logout from Beast Mode?')) {
+                // In Laravel, you would submit the logout form:
+                // document.getElementById('logout-form').submit();
+                alert('Logged out successfully! 🚪');
+                
+                // For demo purposes, let's toggle between authenticated and guest views
+                document.getElementById('authenticated-menu').style.display = 'none';
+                document.getElementById('guest-menu').style.display = 'flex';
+            }
+        }
+
     </script>
 </body>
 </html>

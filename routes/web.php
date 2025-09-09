@@ -16,12 +16,39 @@ use App\Http\Controllers\Auth\AdminLoginController;
 use App\Models\AllEnergyBoosters;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\Api\AuthController;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 */
+
+// Authentication page (public route)
+Route::get('/auth', function () {
+    return view('auth.index');
+})->name('auth.index');
+
+// Web logout route (for navigation bar logout)
+Route::post('/logout', function (Request $request) {
+    // Revoke all Sanctum tokens if user has any
+    if ($request->user() && method_exists($request->user(), 'tokens')) {
+        $request->user()->tokens()->delete();
+    }
+    
+    // Logout from web session
+    Auth::logout();
+    
+    // Invalidate the session
+    $request->session()->invalidate();
+    
+    // Regenerate CSRF token
+    $request->session()->regenerateToken();
+    
+    // Redirect to auth page with success message
+    return redirect()->route('auth.index')->with('success', 'You have been logged out successfully!');
+})->middleware('auth')->name('logout');
 
 // Public routes (accessible without authentication)
 Route::get('/about', [PageController::class, 'about'])->name('about');
@@ -59,9 +86,10 @@ Route::middleware([
     // Protected home page
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     
-    // Dashboard
+    // REMOVED THE REGULAR DASHBOARD ROUTE - Only redirect to home or remove entirely
+    // If you want a regular user dashboard, create the view file or redirect to home
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        return redirect()->route('home');
     })->name('dashboard');
     
     // Protected product routes
@@ -77,6 +105,7 @@ Route::middleware([
     
     // Alternative route names (if you prefer different naming)
     Route::get('/all', [AllEnergyBoostersController::class, 'index'])->name('all.products');
+    Route::get('/products', [AllEnergyBoostersController::class, 'index'])->name('products.index');
     Route::get('/products/{id}', [AllEnergyBoostersController::class, 'show'])->name('products.show');
     
     // Cart routes
@@ -148,7 +177,7 @@ Route::middleware([
     'admin'
 ])->prefix('admin')->name('admin.')->group(function () {
     
-    // Admin Dashboard
+    // Admin Dashboard - This is the only dashboard route now
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     
     // User Management
